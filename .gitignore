@@ -17,3 +17,10 @@ temp-testng-customsuite.xml
 test-output
 .externalToolBuilders
 *~
+=======
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
