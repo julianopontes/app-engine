@@ -1,0 +1,142 @@
+<% if(  label !== url && url !== "" ) { %>
+
+	<h2 class="try-title"><%= label %></h2>
+	<h5 class="try-url">[<%= method %>] <%= url %></h5>
+
+<% } else { %>
+
+	<h2 class="try-title">[<%= method %>] <%= label %></h2>
+
+<% } %>
+
+<p class="try-description"><%= description %></p>
+
+<form class="try-form" method="post" target="_blank" enctype="multipart/form-data">
+	<table class="try-params">
+
+		<%
+			_.each(params, function(param) {
+
+				var visibleClass = ( param.get("visible") ? "try-param-visible" : "try-param-hidden" );
+
+				var flag = "";
+
+				if( param.get("globalParam") ) {
+					flag = "(Global)";
+				} else if( param.get("urlParam") ) {
+					flag = "(URL Param)";
+				}
+
+		%>
+
+			<tr class="<%= visibleClass %>">
+				<td class="try-label"><%= param.getLabel() %>:</td>
+				<td class="try-param">
+
+					<div>
+
+						<!-- First field -->
+						<div>
+
+							<%
+								var value = param.get("value");
+
+								if( _.isArray( value ) ) {
+							%>
+
+								<select id="<%= param.get("name") %>" class="trying-input">
+									<% _.each(value, function(option){ %>
+										<option><%= option %></option>
+									<% }); %>
+								</select>
+
+							<% } else { %>
+
+								<input id="<%= param.get("name") %>" name="<%= param.get("name") %>" value="<%= value %>" type="<%= param.get("multipart") ? 'file' : 'text' %>" class="trying-input" multiple="multiple" />
+
+							<% } %>
+
+							<% if( param.get("multiValue") ) { %>
+								<a class="try-param-add">[+]</a>
+								<a class="try-param-remove">[-]</a>
+							<% } %>
+
+							<span class="try-param-flag"><%= flag %></span>
+						</div>
+
+						<!-- Field clones will be added here -->
+
+					</div>
+
+					<span class="try-param-desc"><%= param.get("description") %></span>
+
+				</td>
+			</tr>
+
+		<% }); %>
+
+		<% if( dynamicParams ) { %>
+			<tr>
+				<td class="try-label">Dynamic Parameters:</td>
+				<td class="try-param">
+					<div>
+						<input type="text" class="trying-input dyn-param-name" />
+						<span class="trying-signal"> = </span>
+						<input type="text" class="trying-input dyn-param-value" />
+
+						<a class="try-param-add">[+]</a>
+						<a class="try-param-remove">[-]</a>
+					</div>
+				</td>
+			</tr>
+		<% } %>
+
+		<tr>
+			<td></td>
+			<td>
+				<input type="submit" value="Try" class="try-button" />
+				<span class="try-result-status"></span>
+			</td>
+		</tr>
+
+	</table>
+</form>
+
+<div class="try-result">
+	Result:
+	<span class="try-result-formatters">
+		Format:
+		<button class="try-format-json">JSON</button>
+		<button class="try-format-xml">XML</button>
+	</span>
+	<textarea class="try-result-text"></textarea>
+</div>
+
+<% if( errors.length > 0 ) { %>
+	<h2 class="try-title">Errors</h2>
+	
+	<ul class="try-errors">
+		<% _.each(errors, function(error) { %>
+
+			<li>
+				<%= error.get("label") %>
+				<ul>
+
+					<%
+						var descriptions = error.get("description");
+
+						if( !_.isArray( descriptions ) ) {
+							descriptions = [descriptions];
+						}
+
+						_.each(descriptions, function(description){ %>
+							<li><%= description %></li>
+						<% });
+					%>
+
+				</ul>
+			</li>
+
+		<% }); %>
+	</ul>
+<% } %>
